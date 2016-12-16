@@ -1,10 +1,20 @@
 const spawn = require('child_process').spawn;
 const readline = require('readline');
+const process = require('process');
+
 
 module.exports = function taskController() {
     this.isWaiting = 0;
 
     this.executeTask = function(command, params) {
+
+        if (command == 'cd') {
+          let goto = params[0] + '/';
+
+          process.chdir(goto);
+          this.waitForInput();
+        } else {
+
         this.isWaiting = 0;
         const childProcess = spawn(command, params);
 
@@ -20,6 +30,7 @@ module.exports = function taskController() {
                 this.isWaiting = 1;
             }
         })
+      }
     }
     this.buildCommand = function(cmd) {
         let command = cmd.split(' ').shift();
@@ -34,7 +45,7 @@ module.exports = function taskController() {
         return params;
     }
     this.waitForInput = function() {
-        if (!this.isWaiting) {
+
             let header = this.buildHeader();
             header.then(h => {
 
@@ -51,7 +62,7 @@ module.exports = function taskController() {
                     rl.close();
                 })
             })
-        }
+
     }
 
     this.buildHeader = function() {
